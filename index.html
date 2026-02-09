@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Buket Bunga 3D</title>
+
+<style>
+body {
+  margin: 0;
+  background: #111;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* LOADING */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  z-index: 10;
+}
+
+/* UI */
+#ui {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(0,0,0,0.6);
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  z-index: 5;
+}
+
+#ui input {
+  width: 260px;
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+}
+
+#ui button {
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #ff6f91;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">Loading 0%</div>
+
+<div id="ui">
+  <div>Ganti Gambar Foto</div>
+  <input id="imageUrl" placeholder="Paste link gambar (https://...)" />
+  <button onclick="changePhoto()">GANTI</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
