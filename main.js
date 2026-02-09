@@ -1,17 +1,15 @@
+let started = false;
 let photoMesh;
 
 // =====================
-// LOADING MANAGER
+// START SCREEN LOGIC
 // =====================
-const loadingText = document.getElementById("loading");
-
-const manager = new THREE.LoadingManager();
-manager.onProgress = (url, loaded, total) => {
-  loadingText.innerText = `Loading ${Math.floor((loaded / total) * 100)}%`;
-};
-manager.onLoad = () => {
-  loadingText.style.display = "none";
-};
+const startScreen = document.getElementById("startScreen");
+startScreen.addEventListener("click", () => {
+  startScreen.style.opacity = 0;
+  setTimeout(() => startScreen.remove(), 600);
+  started = true;
+});
 
 // Scene
 const scene = new THREE.Scene();
@@ -28,16 +26,16 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-// Controls
+// Controls (NONAKTIF sebelum klik)
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.enabled = false;
 
 // Light
-const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-dirLight.position.set(5, 10, 5);
-dirLight.castShadow = true;
-dirLight.shadow.mapSize.set(2048, 2048);
-scene.add(dirLight);
+const light = new THREE.DirectionalLight(0xffffff, 2);
+light.position.set(5, 10, 5);
+light.castShadow = true;
+scene.add(light);
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
 // Ground
@@ -52,14 +50,14 @@ scene.add(ground);
 // =====================
 // FOTO INSTAN
 // =====================
-const textureLoader = new THREE.TextureLoader(manager);
+const textureLoader = new THREE.TextureLoader();
 
 function createInstantPhoto(url) {
   const group = new THREE.Group();
 
   const frame = new THREE.Mesh(
     new THREE.BoxGeometry(6.5, 0.15, 8),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 })
+    new THREE.MeshStandardMaterial({ color: 0xffffff })
   );
   frame.receiveShadow = true;
   group.add(frame);
@@ -79,25 +77,23 @@ function createInstantPhoto(url) {
 
   group.rotation.x = -Math.PI / 2;
   group.position.y = 0.02;
-
   return group;
 }
 
-// DEFAULT IMAGE
 scene.add(createInstantPhoto(
-  "https://images.unsplash.com/photo-1526045612212-70caf35c14df"
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Example.jpg/800px-Example.jpg"
 ));
 
 // =====================
-// GANTI GAMBAR REALTIME
+// GANTI GAMBAR
 // =====================
 window.changePhoto = () => {
   const url = document.getElementById("imageUrl").value;
   if (!url) return;
 
-  textureLoader.load(url, (texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    photoMesh.material.map = texture;
+  textureLoader.load(url, (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    photoMesh.material.map = tex;
     photoMesh.material.needsUpdate = true;
   });
 };
@@ -131,13 +127,13 @@ function flower(x, z) {
     g.add(p);
   }
 
-  const center = new THREE.Mesh(
+  const c = new THREE.Mesh(
     new THREE.SphereGeometry(0.4, 32, 32),
     new THREE.MeshStandardMaterial({ color: 0xffd700 })
   );
-  center.position.y = 4.3;
-  center.castShadow = true;
-  g.add(center);
+  c.position.y = 4.3;
+  c.castShadow = true;
+  g.add(c);
 
   g.position.set(x, 0.2, z);
   return g;
@@ -147,14 +143,22 @@ for (let i = 0; i < 7; i++) {
   scene.add(flower((Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3));
 }
 
-// Animate
+// =====================
+// ANIMATE
+// =====================
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
+
+  if (started) {
+    controls.enabled = true;
+    controls.update();
+  }
+
   renderer.render(scene, camera);
 }
 animate();
 
+// Resize
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
